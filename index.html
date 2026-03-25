@@ -113,6 +113,21 @@
       border-bottom: 1px solid var(--border);
     }
 
+    .group-drag-handle {
+      color: var(--muted);
+      font-size: 20px;
+      cursor: grab;
+      padding: 4px 2px;
+      touch-action: none;
+      line-height: 1;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .group-drag-handle:active { cursor: grabbing; }
+    .sortable-ghost-group { opacity: 0.2; }
+    .sortable-chosen-group { background: var(--surface2) !important; }
+
     .group-emoji {
       font-size: 20px;
       cursor: text;
@@ -692,6 +707,10 @@ function render() {
 function renderInventaire(root) {
   root.innerHTML = '';
 
+  const groupsContainer = document.createElement('div');
+  groupsContainer.id = 'groups-container';
+  root.appendChild(groupsContainer);
+
   S.groups.forEach(group => {
     const groupEl = document.createElement('div');
     groupEl.className = 'group';
@@ -699,6 +718,7 @@ function renderInventaire(root) {
 
     groupEl.innerHTML = `
       <div class="group-header">
+        <span class="group-drag-handle">⠿</span>
         <span class="group-emoji" contenteditable="true" spellcheck="false"
           onblur="updateEmoji('${group.id}', this)">${group.emoji}</span>
         <span class="group-name" contenteditable="true" spellcheck="false"
@@ -715,24 +735,32 @@ function renderInventaire(root) {
       </div>
     `;
 
-    root.appendChild(groupEl);
+    groupsContainer.appendChild(groupEl);
 
     const listEl = document.getElementById(`list-${group.id}`);
     group.items.filter(i => !i.hidden).forEach(item => {
       listEl.appendChild(buildItemEl(group.id, item));
     });
 
-    // SortableJS
+    // SortableJS — items
     new Sortable(listEl, {
       animation: 180,
       handle: '.drag-handle',
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
       dragClass: 'sortable-drag',
-      onEnd(evt) {
-        reorderItems(group.id, listEl);
-      }
+      onEnd() { reorderItems(group.id, listEl); }
     });
+  });
+
+  // SortableJS — groups
+  new Sortable(groupsContainer, {
+    animation: 200,
+    handle: '.group-drag-handle',
+    ghostClass: 'sortable-ghost-group',
+    chosenClass: 'sortable-chosen-group',
+    dragClass: 'sortable-drag',
+    onEnd() { reorderGroups(groupsContainer); }
   });
 
   // Add group button
@@ -916,6 +944,12 @@ function reorderItems(gid, listEl) {
   const hidden = g.items.filter(i => i.hidden);
   const visible = ids.map(id => g.items.find(i => i.id === id)).filter(Boolean);
   g.items = [...visible, ...hidden];
+  save();
+}
+
+function reorderGroups(container) {
+  const ids = [...container.querySelectorAll('.group')].map(el => el.dataset.gid);
+  S.groups = ids.map(id => S.groups.find(g => g.id === id)).filter(Boolean);
   save();
 }
 
