@@ -4,6 +4,1287 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>🛒 Mes Courses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #C0C2BF;
+      --surface: #CACCC9;
+      --surface2: #B4B6B3;
+      --border: #ABABAA;
+      --border-light: #D2D4D1;
+      --text: #1A1A18;
+      --muted: #6A6C69;
+      --accent: #F05A28;
+      --btn-dark: #222220;
+      --btn-dark-text: #F0EDE8;
+      --green: #2E7D32;
+      --red: #C62828;
+      --radius: 6px;
+      --shadow: 0 1px 0 rgba(255,255,255,0.45), 0 -1px 0 rgba(0,0,0,0.12);
+      --btn-shadow: 0 2px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 12px 14px 10px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .app-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .app-title span {
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 1px;
+      margin-left: 6px;
+      font-weight: 500;
+    }
+
+    .badge-count {
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      border-radius: 3px;
+      padding: 3px 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px 6px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--btn-shadow);
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .tab:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+
+    .tab.active {
+      background: var(--btn-dark);
+      border-color: var(--btn-dark);
+      color: var(--btn-dark-text);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      padding: 10px 10px 100px;
+    }
+
+    /* ── GROUP ── */
+    .group {
+      margin-bottom: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 8px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .group-drag-handle {
+      color: var(--muted);
+      font-size: 16px;
+      cursor: grab;
+      padding: 4px 2px;
+      touch-action: none;
+      line-height: 1;
+      user-select: none;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    .group-drag-handle:active { cursor: grabbing; }
+    .sortable-ghost-group { opacity: 0.2; }
+    .sortable-chosen-group { opacity: 0.85; }
+
+    .group-emoji {
+      font-size: 16px;
+      cursor: text;
+      min-width: 22px;
+      text-align: center;
+      outline: none;
+      border-radius: 3px;
+    }
+
+    .group-emoji:focus { background: rgba(0,0,0,0.06); }
+
+    .group-name {
+      flex: 1;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: text;
+      outline: none;
+      border-radius: 3px;
+      padding: 2px 4px;
+      color: var(--text);
+    }
+
+    .group-name:focus { background: rgba(0,0,0,0.06); }
+
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s;
+      flex-shrink: 0;
+    }
+
+    .btn-icon:active { transform: scale(0.82); color: var(--red); }
+
+    /* ── ITEMS ── */
+    .items-list { min-height: 4px; }
+
+    .item-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .swipe-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to left, rgba(198,40,40,0.12), transparent);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+    }
+
+    .swipe-bg span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .swipe-bg.visible { opacity: 1; }
+
+    .item {
+      display: flex;
+      align-items: center;
+      padding: 9px 10px;
+      gap: 8px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+      will-change: transform;
+    }
+
+    .items-list .item-wrapper:last-child .item { border-bottom: none; }
+
+    .drag-handle {
+      color: var(--muted);
+      font-size: 16px;
+      cursor: grab;
+      padding: 4px 2px;
+      touch-action: none;
+      line-height: 1;
+      user-select: none;
+      opacity: 0.5;
+    }
+
+    .drag-handle:active { cursor: grabbing; }
+
+    .item-name {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+
+    .qty-badge {
+      background: var(--btn-dark);
+      color: var(--btn-dark-text);
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 11px;
+      border-radius: 3px;
+      padding: 2px 7px;
+      min-width: 24px;
+      text-align: center;
+      transition: transform 0.12s;
+      flex-shrink: 0;
+    }
+
+    .qty-badge.pop { transform: scale(1.3); }
+
+    .btn-plus {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s;
+      flex-shrink: 0;
+      box-shadow: var(--btn-shadow);
+    }
+
+    .btn-plus:active {
+      transform: scale(0.88) translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+
+    .btn-del {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.4;
+      flex-shrink: 0;
+      border-radius: 4px;
+    }
+
+    .btn-del:active { opacity: 1; transform: scale(0.85); color: var(--red); }
+
+    /* ── ADD ITEM ── */
+    .add-item-row {
+      display: flex;
+      align-items: center;
+      padding: 7px 10px;
+      gap: 8px;
+      border-top: 1px solid var(--border-light);
+      background: var(--surface);
+    }
+
+    .add-item-prefix {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .add-item-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      outline: none;
+      padding: 4px 0;
+    }
+
+    .add-item-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    .btn-add-confirm {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      box-shadow: var(--btn-shadow);
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s;
+    }
+
+    .btn-add-confirm:active { transform: translateY(1px); box-shadow: none; color: var(--accent); }
+
+    /* ── ADD GROUP ── */
+    .btn-add-group {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-add-group:active { border-color: var(--accent); color: var(--accent); }
+
+    /* ── LISTE MODE ── */
+    .list-empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 50px 20px;
+    }
+
+    .list-empty .emoji { font-size: 42px; margin-bottom: 12px; }
+    .list-empty .empty-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .list-empty .empty-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .list-meta {
+      text-align: center;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 80px;
+      margin-top: 4px;
+    }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 10px 14px;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -1px 0 rgba(255,255,255,0.4);
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-reset {
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--btn-shadow);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-reset:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
+
+    .btn-main {
+      flex: 1;
+      padding: 13px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--btn-dark);
+      color: var(--btn-dark-text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.1s;
+      box-shadow: var(--btn-shadow);
+    }
+
+    .btn-main:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 78px;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--btn-dark);
+      color: var(--btn-dark-text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 9px 18px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 500;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 400;
+      display: flex;
+      align-items: flex-end;
+      padding: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s;
+    }
+
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+    .modal {
+      width: 100%;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 20px 18px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 -2px 0 rgba(255,255,255,0.4), 0 8px 24px rgba(0,0,0,0.2);
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.show .modal { transform: translateY(0); }
+
+    .modal-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .modal-text { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+
+    .modal-actions { display: flex; gap: 8px; }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--btn-shadow);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-cancel:active { transform: translateY(1px); box-shadow: none; }
+
+    .btn-delete-confirm {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--red);
+      color: white;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+    }
+
+    .btn-delete-confirm:active { transform: translateY(1px); box-shadow: none; }
+
+    /* ── SORTABLE ── */
+    .sortable-ghost { opacity: 0.2; }
+    .sortable-chosen { background: var(--surface2) !important; }
+    .sortable-drag { opacity: 0.9; }
+
+    /* ── EXPORT MODAL ── */
+    .export-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 500;
+      display: flex; align-items: flex-end; padding: 10px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s;
+    }
+    .export-overlay.show { opacity: 1; pointer-events: all; }
+    .export-modal {
+      width: 100%;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 18px 16px 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 -2px 0 rgba(255,255,255,0.4), 0 8px 24px rgba(0,0,0,0.2);
+      transform: translateY(30px);
+      transition: transform 0.2s;
+      max-height: 80vh;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .export-overlay.show .export-modal { transform: translateY(0); }
+    .export-modal-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .export-steps {
+      font-size: 13px; color: var(--muted); line-height: 1.65;
+      background: rgba(0,0,0,0.07);
+      border-radius: 4px;
+      padding: 10px 12px; border: 1px solid var(--border);
+    }
+    .export-steps b { color: var(--text); }
+    .export-steps .step { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 4px; }
+    .export-steps .step:last-child { margin-bottom: 0; }
+    .step-num {
+      background: var(--accent); color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500; font-size: 10px;
+      border-radius: 2px; width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .export-code {
+      background: rgba(0,0,0,0.1); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--muted);
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      padding: 8px 10px; resize: none;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+      height: 72px; flex-shrink: 0;
+    }
+    .export-actions { display: flex; gap: 8px; }
+    .btn-export-copy {
+      flex: 1; padding: 13px; border-radius: var(--radius);
+      border: none; background: var(--accent); color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer; transition: all 0.1s;
+      box-shadow: var(--btn-shadow);
+    }
+    .btn-export-copy:active { transform: translateY(1px); box-shadow: none; }
+    .btn-export-close {
+      padding: 13px 16px; border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface); box-shadow: var(--btn-shadow);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; cursor: pointer;
+    }
+    .btn-export-close:active { transform: translateY(1px); box-shadow: none; }
+    .btn-github {
+      width: 32px; height: 32px; border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--surface); box-shadow: var(--btn-shadow);
+      color: var(--muted); font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.1s; line-height: 1;
+    }
+    .btn-github:active { transform: translateY(1px); box-shadow: none; color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">Courses<span>// v1</span></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="btn-github" onclick="openExport()" title="Sauvegarder vers GitHub">⬆️</button>
+      <div class="badge-count" id="badge">0 article</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-inv" onclick="setMode('inventaire')">Inventaire</button>
+    <button class="tab" id="tab-lst" onclick="setMode('liste')">Ma Liste</button>
+  </div>
+</div>
+
+<div class="main" id="main"></div>
+
+<div class="bottom-bar">
+  <button class="btn-reset" onclick="resetAll()">Reset</button>
+  <button class="btn-main" id="btn-main" onclick="mainAction()">Voir ma liste</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-text" id="modal-text"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-delete-confirm" onclick="doDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div class="export-overlay" id="export-overlay" onclick="closeExport()">
+  <div class="export-modal" onclick="event.stopPropagation()">
+    <div class="export-modal-title">Sauvegarder sur GitHub</div>
+    <div class="export-steps">
+      <div class="step"><span class="step-num">1</span><span>Appuie sur <b>Copier le code</b> ci-dessous</span></div>
+      <div class="step"><span class="step-num">2</span><span>Va sur ton repo GitHub → fichier <b>index.html</b> → ✏️ Edit</span></div>
+      <div class="step"><span class="step-num">3</span><span>Sélectionne tout (<b>Ctrl+A</b>) et colle (<b>Ctrl+V</b>)</span></div>
+      <div class="step"><span class="step-num">4</span><span>Clique <b>Commit changes</b> → ta liste est sauvegardée 🎉</span></div>
+    </div>
+    <textarea class="export-code" id="export-code" readonly onclick="this.select()">Génération en cours…</textarea>
+    <div class="export-actions">
+      <button class="btn-export-close" onclick="closeExport()">Fermer</button>
+      <button class="btn-export-copy" id="btn-export-copy" onclick="copyExportCode()">Copier le code</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let S = { groups: [], mode: 'inventaire' };
+let pending = null;
+
+// ═══════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════
+function load() {
+  try {
+    const d = localStorage.getItem('courses_v3');
+    S = d ? JSON.parse(d) : defaultData();
+  } catch { S = defaultData(); }
+}
+
+function save() {
+  localStorage.setItem('courses_v3', JSON.stringify(S));
+}
+
+function defaultData() { /*__DATA_START__*/
+  return {"mode":"inventaire","groups":[{"id":"g1","name":"Frigo","emoji":"🧊","items":[{"id":"i1","name":"Lait","hidden":false,"qty":0},{"id":"i2","name":"Beurre","hidden":false,"qty":0},{"id":"i3","name":"Yaourts","hidden":false,"qty":0},{"id":"i4","name":"Fromage","hidden":false,"qty":0},{"id":"i5","name":"Jus d'orange","hidden":false,"qty":0}]},{"id":"g2","name":"Légumes & Fruits","emoji":"🥦","items":[{"id":"i6","name":"Tomates","hidden":false,"qty":0},{"id":"i7","name":"Salade","hidden":false,"qty":0},{"id":"i8","name":"Courgettes","hidden":false,"qty":0},{"id":"i9","name":"Bananes","hidden":false,"qty":0}]},{"id":"g3","name":"Placard","emoji":"📦","items":[{"id":"i10","name":"Pâtes","hidden":false,"qty":0},{"id":"i11","name":"Riz","hidden":false,"qty":0},{"id":"i12","name":"Huile d'olive","hidden":false,"qty":0},{"id":"i13","name":"Café","hidden":false,"qty":0},{"id":"i14","name":"Sel / Poivre","hidden":false,"qty":0}]},{"id":"g4","name":"Hygiène","emoji":"🧴","items":[{"id":"i15","name":"Shampoing","hidden":false,"qty":0},{"id":"i16","name":"Savon","hidden":false,"qty":0},{"id":"i17","name":"Dentifrice","hidden":false,"qty":0},{"id":"i18","name":"Papier toilette","hidden":false,"qty":0}]}]};
+/*__DATA_END__*/ }
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+function render() {
+  const main = document.getElementById('main');
+
+  // Tabs
+  document.getElementById('tab-inv').classList.toggle('active', S.mode === 'inventaire');
+  document.getElementById('tab-lst').classList.toggle('active', S.mode === 'liste');
+
+  // Badge + button
+  const total = S.groups.reduce((n, g) => n + g.items.filter(i => i.qty > 0).length, 0);
+  document.getElementById('badge').textContent = total === 0 ? '0 article' : `${total} article${total > 1 ? 's' : ''}`;
+  document.getElementById('btn-main').textContent = S.mode === 'inventaire' ? 'Voir ma liste' : 'Copier la liste';
+
+  S.mode === 'inventaire' ? renderInventaire(main) : renderListe(main);
+}
+
+// ── INVENTAIRE ──
+function renderInventaire(root) {
+  root.innerHTML = '';
+
+  const groupsContainer = document.createElement('div');
+  groupsContainer.id = 'groups-container';
+  root.appendChild(groupsContainer);
+
+  S.groups.forEach(group => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'group';
+    groupEl.dataset.gid = group.id;
+
+    groupEl.innerHTML = `
+      <div class="group-header">
+        <span class="group-drag-handle">⠿</span>
+        <span class="group-emoji" contenteditable="true" spellcheck="false"
+          onblur="updateEmoji('${group.id}', this)">${group.emoji}</span>
+        <span class="group-name" contenteditable="true" spellcheck="false"
+          onblur="updateName('${group.id}', this)">${escHtml(group.name)}</span>
+        <button class="btn-icon" onclick="askDeleteGroup('${group.id}')" title="Supprimer groupe">🗑️</button>
+      </div>
+      <div class="items-list" id="list-${group.id}"></div>
+      <div class="add-item-row">
+        <span class="add-item-prefix">+ add</span>
+        <input class="add-item-input" id="inp-${group.id}" placeholder="nouvel article…"
+          onkeydown="if(event.key==='Enter'){addItemFromInput('${group.id}');}"
+          autocomplete="off" autocorrect="off">
+        <button class="btn-add-confirm" onclick="addItemFromInput('${group.id}')">↵</button>
+      </div>
+    `;
+
+    groupsContainer.appendChild(groupEl);
+
+    const listEl = document.getElementById(`list-${group.id}`);
+    group.items.filter(i => !i.hidden).forEach(item => {
+      listEl.appendChild(buildItemEl(group.id, item));
+    });
+
+    // SortableJS — items
+    new Sortable(listEl, {
+      animation: 180,
+      handle: '.drag-handle',
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      onEnd() { reorderItems(group.id, listEl); }
+    });
+  });
+
+  // SortableJS — groups
+  new Sortable(groupsContainer, {
+    animation: 200,
+    handle: '.group-drag-handle',
+    ghostClass: 'sortable-ghost-group',
+    chosenClass: 'sortable-chosen-group',
+    dragClass: 'sortable-drag',
+    onEnd() { reorderGroups(groupsContainer); }
+  });
+
+  // Add group button
+  const btn = document.createElement('button');
+  btn.className = 'btn-add-group';
+  btn.textContent = '+ Ajouter un groupe';
+  btn.onclick = addGroup;
+  root.appendChild(btn);
+
+  initSwipes();
+}
+
+function buildItemEl(gid, item) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'item-wrapper';
+  wrapper.dataset.iid = item.id;
+  wrapper.dataset.gid = gid;
+
+  wrapper.innerHTML = `
+    <div class="swipe-bg" id="sbg-${item.id}">
+      <span>👁 Masquer</span>
+    </div>
+    <div class="item" id="itm-${item.id}">
+      <span class="drag-handle">⠿</span>
+      <span class="item-name">${escHtml(item.name)}</span>
+      ${item.qty > 0 ? `<span class="qty-badge" id="badge-${item.id}">${item.qty}</span>` : `<span class="qty-badge" id="badge-${item.id}" style="display:none">0</span>`}
+      <button class="btn-plus" onclick="addQty('${gid}','${item.id}')">+</button>
+      <button class="btn-del" onclick="askDeleteItem('${gid}','${item.id}')">×</button>
+    </div>
+  `;
+
+  return wrapper;
+}
+
+// ── LISTE ──
+function renderListe(root) {
+  root.innerHTML = '';
+
+  const hasItems = S.groups.some(g => g.items.some(i => i.qty > 0));
+
+  if (!hasItems) {
+    root.innerHTML = `
+      <div class="list-empty">
+        <div class="emoji">—</div>
+        <div class="empty-title">Liste vide</div>
+        <div class="empty-sub">Retourne en <b>Inventaire</b><br>et appuie sur + pour ajouter des articles.</div>
+      </div>`;
+    return;
+  }
+
+  const groupsContainer = document.createElement('div');
+  groupsContainer.id = 'liste-groups-container';
+  root.appendChild(groupsContainer);
+
+  S.groups.forEach(group => {
+    const items = group.items.filter(i => i.qty > 0);
+    if (!items.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'group';
+    card.dataset.gid = group.id;
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+    header.innerHTML = `
+      <span class="group-drag-handle">⠿</span>
+      <span style="font-size:20px">${group.emoji}</span>
+      <span style="flex:1;font-weight:600;font-size:15px">${escHtml(group.name)}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.5px">${items.length}</span>
+    `;
+    card.appendChild(header);
+
+    items.forEach(item => {
+      const line = document.createElement('div');
+      line.style.cssText = 'display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);gap:10px;';
+      line.innerHTML = `
+        <span style="flex:1;font-size:15px">${escHtml(item.name)}</span>
+        ${item.qty > 1 ? `<span class="qty-badge">${item.qty}</span>` : ''}
+      `;
+      card.appendChild(line);
+    });
+    // remove last border
+    const lines = card.querySelectorAll('[style*="border-bottom"]');
+    if (lines.length) lines[lines.length - 1].style.borderBottom = 'none';
+
+    groupsContainer.appendChild(card);
+  });
+
+  // SortableJS — groups in liste
+  new Sortable(groupsContainer, {
+    animation: 200,
+    handle: '.group-drag-handle',
+    ghostClass: 'sortable-ghost-group',
+    chosenClass: 'sortable-chosen-group',
+    dragClass: 'sortable-drag',
+    onEnd() { reorderGroups(groupsContainer); }
+  });
+
+  const total = S.groups.reduce((n, g) => n + g.items.filter(i => i.qty > 0).length, 0);
+  const meta = document.createElement('div');
+  meta.className = 'list-meta';
+  meta.textContent = `${total} article${total > 1 ? 's' : ''} — appuie sur "Copier la liste" pour importer dans Notes`;
+  root.appendChild(meta);
+}
+
+// ═══════════════════════════════════════════
+//  SWIPE TO HIDE
+// ═══════════════════════════════════════════
+function initSwipes() {
+  document.querySelectorAll('.item-wrapper').forEach(wrapper => {
+    const itemEl = wrapper.querySelector('.item');
+    const bg = wrapper.querySelector('.swipe-bg');
+    if (!itemEl || !bg || itemEl._swipeInit) return;
+    itemEl._swipeInit = true;
+
+    let sx = 0, sy = 0, cx = 0, dir = null, active = false;
+    const THRESHOLD = 70;
+
+    itemEl.addEventListener('touchstart', e => {
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+      cx = 0; dir = null; active = true;
+      itemEl.style.transition = 'none';
+    }, { passive: true });
+
+    itemEl.addEventListener('touchmove', e => {
+      if (!active) return;
+      const dx = e.touches[0].clientX - sx;
+      const dy = e.touches[0].clientY - sy;
+
+      if (dir === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+        dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      }
+      if (dir !== 'h') return;
+
+      e.preventDefault();
+      cx = Math.min(0, dx);
+      itemEl.style.transform = `translateX(${cx}px)`;
+      bg.classList.toggle('visible', cx < -35);
+    }, { passive: false });
+
+    const endSwipe = () => {
+      if (!active) return;
+      active = false;
+      itemEl.style.transition = 'transform 0.22s ease';
+
+      if (cx < -THRESHOLD) {
+        const iid = wrapper.dataset.iid;
+        const gid = wrapper.dataset.gid;
+        itemEl.style.transform = 'translateX(-105%)';
+        bg.style.opacity = '0';
+        setTimeout(() => hideItem(gid, iid), 230);
+      } else {
+        itemEl.style.transform = 'translateX(0)';
+        bg.classList.remove('visible');
+      }
+    };
+
+    itemEl.addEventListener('touchend', endSwipe, { passive: true });
+    itemEl.addEventListener('touchcancel', endSwipe, { passive: true });
+  });
+}
+
+// ═══════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════
+function setMode(m) {
+  S.mode = m;
+  save();
+  render();
+}
+
+function addQty(gid, iid) {
+  const item = findItem(gid, iid);
+  if (!item) return;
+  item.qty++;
+  save();
+
+  const badge = document.getElementById(`badge-${iid}`);
+  if (badge) {
+    badge.style.display = '';
+    badge.textContent = item.qty;
+    badge.classList.add('pop');
+    setTimeout(() => badge.classList.remove('pop'), 180);
+  }
+
+  // Update global badge
+  const total = S.groups.reduce((n, g) => n + g.items.filter(i => i.qty > 0).length, 0);
+  document.getElementById('badge').textContent = `${total} article${total > 1 ? 's' : ''}`;
+}
+
+function hideItem(gid, iid) {
+  const item = findItem(gid, iid);
+  if (!item) return;
+  item.hidden = true;
+  save();
+  const w = document.querySelector(`.item-wrapper[data-iid="${iid}"]`);
+  if (w) w.remove();
+}
+
+function reorderItems(gid, listEl) {
+  const g = S.groups.find(g => g.id === gid);
+  if (!g) return;
+  const ids = [...listEl.querySelectorAll('.item-wrapper')].map(el => el.dataset.iid);
+  const hidden = g.items.filter(i => i.hidden);
+  const visible = ids.map(id => g.items.find(i => i.id === id)).filter(Boolean);
+  g.items = [...visible, ...hidden];
+  save();
+}
+
+function reorderGroups(container) {
+  const ids = [...container.querySelectorAll(':scope > .group')].map(el => el.dataset.gid);
+  const reordered = ids.map(id => S.groups.find(g => g.id === id)).filter(Boolean);
+  // Keep groups not shown in this view (e.g. empty groups in liste) at the end
+  const rest = S.groups.filter(g => !ids.includes(g.id));
+  S.groups = [...reordered, ...rest];
+  save();
+}
+
+function addItemFromInput(gid) {
+  const inp = document.getElementById(`inp-${gid}`);
+  if (!inp) return;
+  const name = inp.value.trim();
+  if (!name) return;
+  inp.value = '';
+
+  const g = S.groups.find(g => g.id === gid);
+  if (!g) return;
+
+  const item = { id: 'i' + Date.now(), name, hidden: false, qty: 0 };
+  g.items.push(item);
+  save();
+
+  const listEl = document.getElementById(`list-${gid}`);
+  if (listEl) {
+    const el = buildItemEl(gid, item);
+    listEl.appendChild(el);
+    initSwipes();
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  inp.focus();
+}
+
+function addGroup() {
+  const g = { id: 'g' + Date.now(), name: 'Nouveau groupe', emoji: '📁', items: [] };
+  S.groups.push(g);
+  save();
+  render();
+  setTimeout(() => {
+    const names = document.querySelectorAll('.group-name');
+    const last = names[names.length - 1];
+    if (last) {
+      last.focus();
+      document.execCommand('selectAll', false, null);
+    }
+  }, 80);
+}
+
+function updateName(gid, el) {
+  const g = S.groups.find(g => g.id === gid);
+  const val = el.textContent.trim();
+  if (g && val) { g.name = val; save(); }
+  else if (g) el.textContent = g.name;
+}
+
+function updateEmoji(gid, el) {
+  const g = S.groups.find(g => g.id === gid);
+  const chars = [...el.textContent.trim()];
+  if (g && chars.length) { g.emoji = chars[0]; save(); el.textContent = g.emoji; }
+  else if (g) el.textContent = g.emoji;
+}
+
+function askDeleteItem(gid, iid) {
+  const item = findItem(gid, iid);
+  if (!item) return;
+  pending = { type: 'item', gid, iid };
+  showModal(`Supprimer "${item.name}" ?`, 'Cet article sera définitivement supprimé.');
+}
+
+function askDeleteGroup(gid) {
+  const g = S.groups.find(g => g.id === gid);
+  if (!g) return;
+  pending = { type: 'group', gid };
+  showModal(`Supprimer le groupe "${g.name}" ?`, 'Tous les articles seront supprimés définitivement.');
+}
+
+function doDelete() {
+  if (!pending) return;
+  if (pending.type === 'item') {
+    const g = S.groups.find(g => g.id === pending.gid);
+    if (g) g.items = g.items.filter(i => i.id !== pending.iid);
+  } else {
+    S.groups = S.groups.filter(g => g.id !== pending.gid);
+  }
+  save();
+  closeModal();
+  render();
+}
+
+function resetAll() {
+  S.groups.forEach(g => g.items.forEach(i => { i.hidden = false; i.qty = 0; }));
+  save();
+  render();
+  toast('Réinitialisé');
+}
+
+function mainAction() {
+  if (S.mode === 'inventaire') {
+    setMode('liste');
+  } else {
+    const text = buildListText();
+    if (!text) { toast('⚠️ Ta liste est vide !'); return; }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => toast('Liste copiée')).catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); toast('Liste copiée'); }
+  catch { toast('Copie manuelle nécessaire'); }
+  document.body.removeChild(ta);
+}
+
+function buildListText() {
+  const lines = [];
+  S.groups.forEach(g => {
+    g.items.filter(i => i.qty > 0).forEach(i => {
+      lines.push(`• ${i.name}${i.qty > 1 ? ` ×${i.qty}` : ''}`);
+    });
+  });
+  return lines.length ? lines.join('\n') : '';
+}
+
+// ═══════════════════════════════════════════
+//  MODAL & TOAST
+// ═══════════════════════════════════════════
+function showModal(title, text) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-text').textContent = text;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  pending = null;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════
+function findItem(gid, iid) {
+  const g = S.groups.find(g => g.id === gid);
+  return g ? g.items.find(i => i.id === iid) : null;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════
+//  EXPORT TO GITHUB
+// ═══════════════════════════════════════════
+let exportSrc = null;
+
+async function openExport() {
+  document.getElementById('export-overlay').classList.add('show');
+  const ta = document.getElementById('export-code');
+  const btn = document.getElementById('btn-export-copy');
+  ta.value = 'Chargement du code source…';
+  btn.disabled = true;
+
+  try {
+    // Fetch the raw HTML source from the server (works on GitHub Pages)
+    const src = await fetch(location.href, { cache: 'no-store' }).then(r => r.text());
+
+    // Build a clean snapshot: all items visible, qty=0 (it's the reference list, not a shopping state)
+    const snapshot = {
+      mode: 'inventaire',
+      groups: S.groups.map(g => ({
+        ...g,
+        items: g.items.map(i => ({ ...i, hidden: false, qty: 0 }))
+      }))
+    };
+
+    const jsonStr = JSON.stringify(snapshot);
+
+    // Replace the content between the markers in the source
+    exportSrc = src.replace(
+      /\/\*__DATA_START__\*\/[\s\S]*?\/\*__DATA_END__\*\//,
+      `/*__DATA_START__*/\n  return ${jsonStr};\n/*__DATA_END__*/`
+    );
+
+    ta.value = exportSrc;
+    btn.disabled = false;
+  } catch (e) {
+    ta.value = '⚠️ Impossible de récupérer le source.\nCela fonctionne uniquement depuis GitHub Pages,\npas en local (file://).';
+    btn.disabled = true;
+  }
+}
+
+function closeExport() {
+  document.getElementById('export-overlay').classList.remove('show');
+}
+
+function copyExportCode() {
+  if (!exportSrc) return;
+  const btn = document.getElementById('btn-export-copy');
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(exportSrc)
+      .then(() => { btn.textContent = 'Copié !'; setTimeout(() => btn.textContent = 'Copier le code', 2200); })
+      .catch(() => manualCopy(btn));
+  } else {
+    manualCopy(btn);
+  }
+}
+
+function manualCopy(btn) {
+  const ta = document.getElementById('export-code');
+  ta.select();
+  try {
+    document.execCommand('copy');
+    btn.textContent = 'Copié !';
+    setTimeout(() => btn.textContent = 'Copier le code', 2200);
+  } catch {
+    ta.focus(); ta.select();
+    toast('👆 Maintiens appuyé sur le code → Tout sélectionner → Copier');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+load();
+render();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🛒 Mes Courses</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
