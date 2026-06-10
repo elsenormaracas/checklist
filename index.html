@@ -1185,7 +1185,7 @@ function buildListText() {
     .filter(Boolean);
   ordered.forEach(g => {
     g.items.filter(i => i.qty > 0).forEach(i => {
-      lines.push(`• ${i.name}${i.qty > 1 ? ` ×${i.qty}` : ''}`);
+      lines.push(`${i.name}${i.qty > 1 ? ` ×${i.qty}` : ''}`);
     });
   });
   return lines.length ? lines.join('\n') : '';
